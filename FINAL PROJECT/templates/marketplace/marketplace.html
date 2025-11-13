@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Marketplace Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h1 class="text-3xl font-bold text-farm-green mb-2">Farmlink Marketplace</h1>
+        <p class="text-gray-600 mb-4">Buy and sell agricultural products directly with farmers in Sindh</p>
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex space-x-4">
+                <a href="{{ url_for('new_product') }}" class="bg-farm-green text-white px-4 py-2 rounded hover:bg-farm-light-green transition">
+                    <i class="fas fa-plus mr-2"></i>Sell Product
+                </a>
+                <a href="{{ url_for('cart') }}" class="bg-farm-brown text-white px-4 py-2 rounded hover:bg-farm-green transition">
+                    <i class="fas fa-shopping-cart mr-2"></i>View Cart
+                </a>
+            </div>
+            
+            <!-- Search Form -->
+            <form action="{{ url_for('search') }}" method="GET" class="flex">
+                <input type="text" name="q" placeholder="Search products..." 
+                       class="px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-farm-green w-64">
+                <button type="submit" class="bg-farm-green text-white px-4 py-2 rounded-r hover:bg-farm-light-green transition">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories Filter -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <h3 class="font-bold text-farm-green mb-3">Filter by Category</h3>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ url_for('marketplace') }}" class="bg-farm-green text-white px-3 py-1 rounded text-sm">
+                All Products
+            </a>
+            {% for category in categories %}
+            <a href="#" class="bg-farm-tan text-farm-green px-3 py-1 rounded text-sm hover:bg-farm-light-green hover:text-white transition">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+            <!-- Product Image -->
+            <div class="bg-farm-tan h-48 flex items-center justify-center">
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                {% else %}
+                <i class="fas fa-apple-alt text-farm-green text-4xl"></i>
+                {% endif %}
+            </div>
+            
+            <!-- Product Info -->
+            <div class="p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-lg text-gray-800">{{ product.name }}</h3>
+                    <span class="bg-farm-tan text-farm-green px-2 py-1 rounded text-xs">
+                        {{ product.category }}
+                    </span>
+                </div>
+                
+                <p class="text-gray-600 text-sm mb-3">{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-farm-green font-bold text-lg">Rs. {{ product.price }}/{{ product.unit }}</span>
+                    <span class="text-gray-500 text-sm">Qty: {{ product.quantity }}</span>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" 
+                       class="flex-1 bg-farm-green text-white text-center py-2 rounded hover:bg-farm-light-green transition text-sm">
+                        View Details
+                    </a>
+                    {% if current_user.is_authenticated and current_user.id != product.user_id %}
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="flex-1">
+                        <button type="submit" class="w-full bg-farm-brown text-white py-2 rounded hover:bg-farm-green transition text-sm">
+                            Add to Cart
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-gray-500 text-xs">Sold by: {{ product.seller.name }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <i class="fas fa-shopping-basket text-gray-300 text-4xl mb-4"></i>
+        <h3 class="text-xl font-bold text-gray-600 mb-2">No Products Available</h3>
+        <p class="text-gray-500 mb-6">Be the first to list your agricultural products!</p>
+        <a href="{{ url_for('new_product') }}" class="bg-farm-green text-white px-6 py-3 rounded hover:bg-farm-light-green transition">
+            <i class="fas fa-plus mr-2"></i>Sell Your First Product
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Marketplace Stats -->
+    <div class="mt-8 bg-farm-green text-white rounded-lg p-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+                <div class="text-2xl font-bold mb-1">{{ products|length }}+</div>
+                <div class="text-farm-tan text-sm">Products Listed</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold mb-1">50+</div>
+                <div class="text-farm-tan text-sm">Active Sellers</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold mb-1">100+</div>
+                <div class="text-farm-tan text-sm">Successful Orders</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold mb-1">5</div>
+                <div class="text-farm-tan text-sm">Cities in Sindh</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

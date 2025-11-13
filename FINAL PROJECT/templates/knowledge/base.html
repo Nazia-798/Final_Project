@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Main Content -->
+        <div class="lg:w-3/4">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h1 class="text-3xl font-bold text-farm-green mb-6">Knowledge Base</h1>
+                
+                <div class="flex justify-between items-center mb-6">
+                    <a href="{{ url_for('new_knowledge_post') }}" class="bg-farm-green text-white px-4 py-2 rounded hover:bg-farm-light-green transition">
+                        <i class="fas fa-plus mr-2"></i>Write Article
+                    </a>
+                    
+                    <form action="{{ url_for('search') }}" method="GET" class="flex">
+                        <input type="text" name="q" placeholder="Search articles..." 
+                               class="px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-farm-green">
+                        <button type="submit" class="bg-farm-brown text-white px-4 py-2 rounded-r hover:bg-farm-green transition">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Categories Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for category in categories %}
+                    <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-book text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-farm-green">{{ category.name }}</h3>
+                                <p class="text-gray-600 text-sm">{{ category.description }}</p>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="inline-block mt-4 text-farm-green hover:underline">
+                            Browse articles →
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Featured Articles -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-farm-green mb-6">Featured Articles</h2>
+                <div class="space-y-6">
+                    {% for post in trending_posts %}
+                    <div class="border-b pb-6 last:border-b-0">
+                        <h3 class="text-xl font-bold text-farm-green mb-2">
+                            <a href="{{ url_for('knowledge_post', post_id=post.id) }}" class="hover:underline">
+                                {{ post.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 mb-3">{{ post.content[:150] }}...</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center">
+                                    <i class="fas fa-user mr-1"></i>
+                                    {{ post.author.name }}
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    {{ post.created_at.strftime('%B %d, %Y') }}
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-thumbs-up mr-1"></i>
+                                    {{ post.likes }} likes
+                                </span>
+                            </div>
+                            <a href="{{ url_for('knowledge_post', post_id=post.id) }}" class="text-farm-green hover:underline">
+                                Read more →
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-book-open text-gray-300 text-4xl mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-600 mb-2">No articles yet</h3>
+                        <p class="text-gray-500">Be the first to share your knowledge!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:w-1/4">
+            <!-- Trending Articles -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold text-farm-green mb-4">Trending Articles</h3>
+                <div class="space-y-3">
+                    {% for post in trending_posts[:5] %}
+                    <div class="border-l-2 border-farm-green pl-3">
+                        <a href="{{ url_for('knowledge_post', post_id=post.id) }}" class="font-semibold text-gray-800 hover:text-farm-green">
+                            {{ post.title[:40] }}{% if post.title|length > 40 %}...{% endif %}
+                        </a>
+                        <p class="text-gray-600 text-sm">{{ post.likes }} likes</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Write Article CTA -->
+            <div class="bg-farm-green text-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">Share Your Knowledge</h3>
+                <p class="text-farm-tan mb-4">Help other farmers by sharing your experiences and expertise.</p>
+                <a href="{{ url_for('new_knowledge_post') }}" class="block bg-white text-farm-green text-center py-2 rounded hover:bg-farm-tan transition">
+                    Write Article
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

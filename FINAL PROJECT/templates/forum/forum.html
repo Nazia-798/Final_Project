@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Main Content -->
+        <div class="lg:w-3/4">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h1 class="text-3xl font-bold text-farm-green mb-6">Discussion Forum</h1>
+                
+                <!-- Quick Actions -->
+                <div class="flex justify-between items-center mb-6">
+                    <a href="{{ url_for('new_forum_post') }}" class="bg-farm-green text-white px-4 py-2 rounded hover:bg-farm-light-green transition">
+                        <i class="fas fa-plus mr-2"></i>New Discussion
+                    </a>
+                    
+                    <!-- Search Form -->
+                    <form action="{{ url_for('search') }}" method="GET" class="flex">
+                        <input type="text" name="q" placeholder="Search discussions..." 
+                               class="px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-farm-green">
+                        <button type="submit" class="bg-farm-brown text-white px-4 py-2 rounded-r hover:bg-farm-green transition">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Categories Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for category in categories %}
+                    <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-seedling text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-farm-green">{{ category.name }}</h3>
+                                <p class="text-gray-600 text-sm">{{ category.description }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if category.subcategories %}
+                        <div class="mt-4">
+                            <h4 class="font-semibold text-farm-brown mb-2">Subcategories:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for subcat in category.subcategories %}
+                                <a href="{{ url_for('forum_category', category_id=subcat.id) }}" 
+                                   class="bg-farm-tan px-3 py-1 rounded text-sm hover:bg-farm-light-green hover:text-white transition">
+                                    {{ subcat.name }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('forum_category', category_id=category.id) }}" 
+                           class="inline-block mt-4 text-farm-green hover:underline">
+                            Browse discussions →
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:w-1/4">
+            <!-- Latest Discussions -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold text-farm-green mb-4">Latest Discussions</h3>
+                <div class="space-y-3">
+                    {% for post in latest_posts %}
+                    <div class="border-l-2 border-farm-green pl-3">
+                        <a href="{{ url_for('forum_post', post_id=post.id) }}" class="font-semibold text-gray-800 hover:text-farm-green">
+                            {{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}
+                        </a>
+                        <p class="text-gray-600 text-sm">by {{ post.author.name }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Forum Stats -->
+            <div class="bg-farm-green text-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">Forum Stats</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Total Posts:</span>
+                        <span class="font-bold">{{ latest_posts|length * 10 }}+</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Active Today:</span>
+                        <span class="font-bold">24</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

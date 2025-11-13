@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-3xl font-bold text-farm-green mb-2">Become a Consultant</h1>
+            <p class="text-gray-600 mb-6">Share your expertise and help fellow farmers grow.</p>
+            
+            <form method="POST">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2" for="category">
+                        Consultation Category
+                    </label>
+                    <select id="category" name="category" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" required>
+                        <option value="">Select your specialty</option>
+                        <option value="Crop Management">Crop Management</option>
+                        <option value="Soil Science">Soil Science</option>
+                        <option value="Irrigation">Irrigation & Water Management</option>
+                        <option value="Pest Control">Pest & Disease Control</option>
+                        <option value="Livestock">Livestock Management</option>
+                        <option value="Organic Farming">Organic Farming</option>
+                        <option value="Agricultural Technology">Agricultural Technology</option>
+                        <option value="Market Analysis">Market Analysis</option>
+                        <option value="Farm Business">Farm Business Management</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2" for="expertise">
+                        Areas of Expertise
+                    </label>
+                    <textarea id="expertise" name="expertise" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                              placeholder="Describe your specific skills, experience, and areas where you can provide consultation..."
+                              required></textarea>
+                    <p class="text-gray-500 text-sm mt-1">Be specific about what problems you can help solve.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2" for="contact">
+                        Contact Information
+                    </label>
+                    <input type="text" id="contact" name="contact" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                           placeholder="Phone number, WhatsApp, or preferred contact method"
+                           required>
+                    <p class="text-gray-500 text-sm mt-1">This will be visible to users seeking consultation.</p>
+                </div>
+                
+                <div class="bg-farm-tan p-4 rounded mb-6">
+                    <h4 class="font-bold text-farm-green mb-2">Consultant Guidelines</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• Provide accurate and helpful advice</li>
+                        <li>• Respond to consultation requests promptly</li>
+                        <li>• Maintain professional conduct</li>
+                        <li>• Your application will be reviewed by admin</li>
+                    </ul>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <a href="{{ url_for('dashboard') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400 transition">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-farm-green text-white px-6 py-2 rounded hover:bg-farm-light-green transition">
+                        Submit Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

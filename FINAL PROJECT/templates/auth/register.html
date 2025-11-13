@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-farm-green text-white py-4 px-6">
+            <h2 class="text-2xl font-bold">Join AgriFarma</h2>
+            <p class="text-farm-tan">Create your free account</p>
+        </div>
+        
+        <form method="POST" class="p-6 space-y-4">
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                    Full Name
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                       type="text" id="name" name="name" required>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                    Email Address
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                       type="email" id="email" name="email" required>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                    Password
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                       type="password" id="password" name="password" required>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="profession">
+                    Profession
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                       type="text" id="profession" name="profession" placeholder="Farmer, Student, etc." required>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="expertise">
+                    Expertise Level
+                </label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                        id="expertise" name="expertise" required>
+                    <option value="">Select Level</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
+                    I am a
+                </label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" 
+                        id="role" name="role" required>
+                    <option value="">Select Role</option>
+                    <option value="farmer">Farmer</option>
+                    <option value="consultant">Consultant</option>
+                    <option value="academic">Academic/Student</option>
+                    <option value="buyer">Buyer/Seller</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="w-full bg-farm-green hover:bg-farm-light-green text-white font-bold py-2 px-4 rounded transition">
+                Register
+            </button>
+            
+            <div class="text-center text-gray-600">
+                Already have an account? 
+                <a href="{{ url_for('login') }}" class="text-farm-green hover:underline">Login here</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

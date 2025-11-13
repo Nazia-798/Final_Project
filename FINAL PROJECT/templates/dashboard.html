@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h1 class="text-3xl font-bold text-farm-green mb-2">Welcome, {{ current_user.name }}!</h1>
+        <p class="text-gray-600">Member since {{ current_user.join_date.strftime('%B %Y') }}</p>
+        <div class="flex items-center mt-4 space-x-4 text-sm text-gray-600">
+            <div class="flex items-center">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <span>{{ current_user.location_city or 'Sindh' }}, Pakistan</span>
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-briefcase mr-2"></i>
+                <span>{{ current_user.profession or 'Farmer' }}</span>
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-star mr-2"></i>
+                <span>{{ current_user.expertise_level|title }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-farm-light-green text-white rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold mb-2">{{ user_posts }}</div>
+            <div class="text-farm-tan">Your Posts</div>
+        </div>
+        <div class="bg-farm-brown text-white rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold mb-2">{{ user_products }}</div>
+            <div class="text-farm-tan">Products Listed</div>
+        </div>
+        <div class="bg-farm-green text-white rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold mb-2">{{ user_orders }}</div>
+            <div class="text-farm-tan">Orders Placed</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <a href="{{ url_for('new_forum_post') }}" class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-comment text-white text-xl"></i>
+            </div>
+            <h3 class="font-bold text-farm-green mb-2">Start Discussion</h3>
+            <p class="text-gray-600 text-sm">Ask questions in forum</p>
+        </a>
+
+        <a href="{{ url_for('new_knowledge_post') }}" class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-book text-white text-xl"></i>
+            </div>
+            <h3 class="font-bold text-farm-green mb-2">Write Article</h3>
+            <p class="text-gray-600 text-sm">Share knowledge</p>
+        </a>
+
+        <a href="{{ url_for('new_product') }}" class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shopping-cart text-white text-xl"></i>
+            </div>
+            <h3 class="font-bold text-farm-green mb-2">Sell Product</h3>
+            <p class="text-gray-600 text-sm">List in marketplace</p>
+        </a>
+
+        {% if not current_user.is_consultant %}
+        <a href="{{ url_for('become_consultant') }}" class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-tie text-white text-xl"></i>
+            </div>
+            <h3 class="font-bold text-farm-green mb-2">Become Consultant</h3>
+            <p class="text-gray-600 text-sm">Share expertise</p>
+        </a>
+        {% else %}
+        <a href="{{ url_for('consultant_profile', consultant_id=current_user.id) }}" class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-tie text-white text-xl"></i>
+            </div>
+            <h3 class="font-bold text-farm-green mb-2">Consultant Profile</h3>
+            <p class="text-gray-600 text-sm">View your profile</p>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Posts -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-farm-green mb-4">Your Recent Posts</h2>
+        <div class="space-y-4">
+            {% if user_recent_posts %}
+                {% for post in user_recent_posts %}
+                <div class="border-l-4 border-farm-green pl-4 py-2">
+                    <a href="{{ url_for('forum_post', post_id=post.id) }}" class="font-semibold hover:text-farm-green">
+                        {{ post.title }}
+                    </a>
+                    <p class="text-gray-600 text-sm">{{ post.created_at.strftime('%B %d, %Y') }}</p>
+                    <div class="flex space-x-2 mt-1">
+                        <span class="bg-farm-tan text-farm-green px-2 py-1 rounded text-xs">
+                            {{ post.post_type|title }}
+                        </span>
+                        <span class="bg-farm-light-green text-white px-2 py-1 rounded text-xs">
+                            {{ post.comments|length }} comments
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-600">No posts yet. Start by joining discussions!</p>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('forum') }}" class="inline-block mt-4 text-farm-green font-bold hover:underline">
+            View All Posts →
+        </a>
+    </div>
+
+    <!-- Recent Products -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-farm-green mb-4">Your Listed Products</h2>
+        <div class="space-y-4">
+            {% if user_products_list %}
+                {% for product in user_products_list %}
+                <div class="flex justify-between items-center border-b pb-4">
+                    <div>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="font-semibold hover:text-farm-green">
+                            {{ product.name }}
+                        </a>
+                        <p class="text-farm-green font-bold">Rs. {{ product.price }}/{{ product.unit }}</p>
+                    </div>
+                    <span class="bg-{% if product.is_approved %}green{% else %}yellow{% endif %}-100 text-{% if product.is_approved %}green{% else %}yellow{% endif %}-800 px-2 py-1 rounded text-xs">
+                        {{ 'Approved' if product.is_approved else 'Pending' }}
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-600">No products listed yet. Start selling in marketplace!</p>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('marketplace') }}" class="inline-block mt-4 text-farm-green font-bold hover:underline">
+            Manage Products →
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}

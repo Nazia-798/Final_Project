@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-farm-green mb-6">Shopping Cart</h1>
+        
+        <!-- Cart will be populated by JavaScript -->
+        <div id="cart-container">
+            <!-- Cart items will be loaded here by JavaScript -->
+        </div>
+
+        <!-- Delivery Information -->
+        <div class="bg-farm-tan rounded-lg p-6 mb-6">
+            <h3 class="font-bold text-farm-green mb-3">Delivery Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="text-center">
+                    <i class="fas fa-shipping-fast text-farm-green text-xl mb-2"></i>
+                    <p class="font-semibold">Free Delivery</p>
+                    <p class="text-gray-600">Within Sindh for orders over Rs. 1000</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-clock text-farm-green text-xl mb-2"></i>
+                    <p class="font-semibold">2-3 Days Delivery</p>
+                    <p class="text-gray-600">Standard delivery time</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-shield-alt text-farm-green text-xl mb-2"></i>
+                    <p class="font-semibold">Quality Guarantee</p>
+                    <p class="text-gray-600">Fresh from farm to you</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Cart Functionality -->
+<script>
+// Dummy Cart Data
+const dummyCartItems = [
+    {
+        id: 1,
+        product: {
+            id: 101,
+            name: "Organic Wheat",
+            category: "Grains",
+            price: 120,
+            unit: "kg",
+            image: "🌾"
+        },
+        quantity: 2
+    },
+    {
+        id: 2,
+        product: {
+            id: 102,
+            name: "Fresh Mangoes",
+            category: "Fruits",
+            price: 200,
+            unit: "kg",
+            image: "🥭"
+        },
+        quantity: 1
+    },
+    {
+        id: 3,
+        product: {
+            id: 103,
+            name: "Farm Fresh Eggs",
+            category: "Livestock Products",
+            price: 180,
+            unit: "dozen",
+            image: "🥚"
+        },
+        quantity: 1
+    }
+];
+
+// Initialize cart from localStorage or use dummy data
+function initializeCart() {
+    let cart = JSON.parse(localStorage.getItem('agrifarma_cart')) || dummyCartItems;
+    localStorage.setItem('agrifarma_cart', JSON.stringify(cart));
+    return cart;
+}
+
+// Calculate total price
+function calculateTotal(cartItems) {
+    return cartItems.reduce((total, item) => {
+        return total + (item.product.price * item.quantity);
+    }, 0);
+}
+
+// Render cart items
+function renderCart() {
+    const cartContainer = document.getElementById('cart-container');
+    const cartItems = JSON.parse(localStorage.getItem('agrifarma_cart')) || [];
+    
+    if (cartItems.length === 0) {
+        cartContainer.innerHTML = `
+            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                <i class="fas fa-shopping-cart text-gray-300 text-4xl mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-600 mb-2">Your cart is empty</h3>
+                <p class="text-gray-500 mb-6">Add some products from our marketplace</p>
+                <a href="/marketplace" class="bg-farm-green text-white px-6 py-3 rounded hover:bg-farm-light-green transition">
+                    Browse Products
+                </a>
+            </div>
+        `;
+        return;
+    }
+
+    const total = calculateTotal(cartItems);
+    
+    let cartHTML = `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="divide-y divide-gray-200">
+    `;
+
+    cartItems.forEach(item => {
+        const itemTotal = item.product.price * item.quantity;
+        cartHTML += `
+            <div class="p-6" data-cart-id="${item.id}">
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                        <div class="bg-farm-tan w-16 h-16 rounded flex items-center justify-center text-2xl">
+                            ${item.product.image}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">${item.product.name}</h3>
+                            <p class="text-gray-600 text-sm">${item.product.category}</p>
+                            <p class="text-farm-green font-bold">Rs. ${item.product.price}/${item.product.unit}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <span class="block text-gray-600 text-sm mb-1">Quantity</span>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="bg-gray-200 w-8 h-8 rounded hover:bg-gray-300 transition">-</button>
+                                <span class="text-lg font-semibold w-8 text-center">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="bg-gray-200 w-8 h-8 rounded hover:bg-gray-300 transition">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <span class="block text-gray-600 text-sm mb-1">Total</span>
+                            <span class="text-lg font-bold text-farm-green">Rs. ${itemTotal}</span>
+                        </div>
+                        
+                        <button onclick="removeFromCart(${item.id})" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    cartHTML += `
+            </div>
+            
+            <!-- Cart Summary -->
+            <div class="bg-gray-50 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xl font-bold text-gray-800">Total Amount:</span>
+                    <span class="text-2xl font-bold text-farm-green">Rs. ${total}</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="/marketplace" class="bg-gray-300 text-gray-700 text-center py-3 rounded hover:bg-gray-400 transition">
+                        Continue Shopping
+                    </a>
+                    
+                    <!-- Checkout Form -->
+                    <form onsubmit="handleCheckout(event)">
+                        <div class="mb-3">
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="address">
+                                Shipping Address
+                            </label>
+                            <textarea id="address" name="address" rows="2"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green text-sm"
+                                      placeholder="Enter your complete shipping address"
+                                      required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-farm-green text-white py-3 rounded hover:bg-farm-light-green transition">
+                            Proceed to Checkout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    cartContainer.innerHTML = cartHTML;
+}
+
+// Update item quantity
+function updateQuantity(itemId, change) {
+    let cart = JSON.parse(localStorage.getItem('agrifarma_cart')) || [];
+    const itemIndex = cart.findIndex(item => item.id === itemId);
+    
+    if (itemIndex !== -1) {
+        cart[itemIndex].quantity += change;
+        
+        // Remove item if quantity becomes 0 or less
+        if (cart[itemIndex].quantity <= 0) {
+            cart.splice(itemIndex, 1);
+        }
+        
+        localStorage.setItem('agrifarma_cart', JSON.stringify(cart));
+        renderCart();
+        updateCartCount();
+    }
+}
+
+// Remove item from cart
+function removeFromCart(itemId) {
+    let cart = JSON.parse(localStorage.getItem('agrifarma_cart')) || [];
+    cart = cart.filter(item => item.id !== itemId);
+    localStorage.setItem('agrifarma_cart', JSON.stringify(cart));
+    renderCart();
+    updateCartCount();
+}
+
+// Handle checkout
+function handleCheckout(event) {
+    event.preventDefault();
+    const address = document.getElementById('address').value;
+    
+    if (!address.trim()) {
+        alert('Please enter your shipping address');
+        return;
+    }
+    
+    // Create order
+    const cart = JSON.parse(localStorage.getItem('agrifarma_cart')) || [];
+    const total = calculateTotal(cart);
+    
+    const order = {
+        id: Date.now(),
+        items: [...cart],
+        total: total,
+        address: address,
+        status: 'pending',
+        date: new Date().toISOString()
+    };
+    
+    // Save order to localStorage
+    let orders = JSON.parse(localStorage.getItem('agrifarma_orders')) || [];
+    orders.unshift(order);
+    localStorage.setItem('agrifarma_orders', JSON.stringify(orders));
+    
+    // Clear cart
+    localStorage.removeItem('agrifarma_cart');
+    
+    // Show success message
+    alert(`Order placed successfully! Total: Rs. ${total}\nYour order will be delivered to: ${address}`);
+    
+    // Redirect to orders page
+    window.location.href = '/orders';
+}
+
+// Update cart count in navigation
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('agrifarma_cart')) || [];
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    
+    // Update cart count in UI (you'll need to add this element to your base.html)
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        if (totalItems > 0) {
+            cartCountElement.textContent = totalItems;
+            cartCountElement.classList.remove('hidden');
+        } else {
+            cartCountElement.classList.add('hidden');
+        }
+    }
+}
+
+// Initialize cart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCart();
+    renderCart();
+    updateCartCount();
+});
+</script>
+{% endblock %}

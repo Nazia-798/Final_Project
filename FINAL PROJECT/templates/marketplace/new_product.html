@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-3xl font-bold text-farm-green mb-2">Sell Your Product</h1>
+            <p class="text-gray-600 mb-6">List your agricultural products to reach buyers across Sindh</p>
+            
+            <form method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2" for="name">
+                            Product Name *
+                        </label>
+                        <input type="text" id="name" name="name" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                               placeholder="e.g., Organic Wheat, Fresh Mangoes"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2" for="category">
+                            Category *
+                        </label>
+                        <select id="category" name="category" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" required>
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2" for="price">
+                            Price (Rs.) *
+                        </label>
+                        <input type="number" id="price" name="price" step="0.01" min="0"
+                               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                               placeholder="0.00"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2" for="quantity">
+                            Quantity *
+                        </label>
+                        <input type="number" id="quantity" name="quantity" min="1"
+                               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                               placeholder="e.g., 100"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2" for="unit">
+                            Unit *
+                        </label>
+                        <select id="unit" name="unit" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green" required>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="g">Gram (g)</option>
+                            <option value="lb">Pound (lb)</option>
+                            <option value="piece">Piece</option>
+                            <option value="dozen">Dozen</option>
+                            <option value="packet">Packet</option>
+                            <option value="bag">Bag</option>
+                            <option value="liter">Liter</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2" for="description">
+                        Product Description *
+                    </label>
+                    <textarea id="description" name="description" rows="5"
+                              class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green"
+                              placeholder="Describe your product in detail. Include quality, freshness, growing methods, etc."
+                              required></textarea>
+                    <p class="text-gray-500 text-sm mt-1">Be detailed to attract more buyers.</p>
+                </div>
+
+                <!-- Image Upload (Placeholder for future implementation) -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">
+                        Product Images
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded p-8 text-center">
+                        <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-2"></i>
+                        <p class="text-gray-500">Product image upload coming soon</p>
+                        <p class="text-gray-400 text-sm">For now, a default image will be used</p>
+                    </div>
+                </div>
+
+                <!-- Seller Guidelines -->
+                <div class="bg-farm-tan p-4 rounded mb-6">
+                    <h4 class="font-bold text-farm-green mb-2">Seller Guidelines</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• Provide accurate product information</li>
+                        <li>• Set fair and competitive prices</li>
+                        <li>• Maintain product quality as described</li>
+                        <li>• Respond to buyer inquiries promptly</li>
+                        <li>• Your listing will be reviewed by admin</li>
+                    </ul>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <a href="{{ url_for('marketplace') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400 transition">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-farm-green text-white px-6 py-2 rounded hover:bg-farm-light-green transition">
+                        List Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

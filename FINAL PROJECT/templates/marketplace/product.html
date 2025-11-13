@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+                <!-- Product Images -->
+                <div>
+                    <div class="bg-farm-tan h-80 rounded-lg flex items-center justify-center mb-4">
+                        {% if product.image %}
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="h-full w-full object-cover rounded-lg">
+                        {% else %}
+                        <i class="fas fa-apple-alt text-farm-green text-6xl"></i>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div>
+                    <nav class="mb-4">
+                        <a href="{{ url_for('marketplace') }}" class="text-farm-green hover:underline">Marketplace</a> 
+                        <span class="mx-2">/</span>
+                        <span class="text-gray-600">{{ product.name }}</span>
+                    </nav>
+
+                    <h1 class="text-3xl font-bold text-farm-green mb-2">{{ product.name }}</h1>
+                    
+                    <div class="flex items-center mb-4">
+                        <span class="bg-farm-tan text-farm-green px-3 py-1 rounded-full text-sm">
+                            {{ product.category }}
+                        </span>
+                        <span class="ml-4 text-gray-500 text-sm">
+                            Listed {{ product.created_at.strftime('%B %d, %Y') }}
+                        </span>
+                    </div>
+
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-farm-green">Rs. {{ product.price }}</span>
+                        <span class="text-gray-600">/ {{ product.unit }}</span>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-800 mb-2">Available Quantity:</h3>
+                        <p class="text-xl text-farm-green">{{ product.quantity }} {{ product.unit }}</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-800 mb-2">Product Description:</h3>
+                        <p class="text-gray-700 leading-relaxed">{{ product.description }}</p>
+                    </div>
+
+                    <!-- Seller Information -->
+                    <div class="border-t border-gray-200 pt-6 mb-6">
+                        <h3 class="font-bold text-gray-800 mb-3">Seller Information</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-farm-green w-12 h-12 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">{{ product.seller.name }}</p>
+                                <p class="text-gray-600 text-sm">{{ product.seller.profession }}</p>
+                                <p class="text-gray-500 text-sm">{{ product.seller.location_city or 'Sindh' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.id != product.user_id %}
+                            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="flex space-x-3">
+                                <div class="flex-1">
+                                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity:</label>
+                                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.quantity }}"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-farm-green">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                                    <button type="submit" class="w-full bg-farm-green text-white py-2 rounded hover:bg-farm-light-green transition">
+                                        <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                            </form>
+                            {% else %}
+                            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                                This is your product listing
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="bg-farm-tan p-4 rounded text-center">
+                            <p class="text-farm-green">
+                                <a href="{{ url_for('login') }}" class="font-bold hover:underline">Login</a> to purchase this product
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('marketplace') }}" class="block text-center text-farm-green hover:underline">
+                            ← Back to Marketplace
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-farm-green mb-6">Similar Products</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Sample related products -->
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                    <div class="bg-farm-tan h-32 rounded flex items-center justify-center mb-3">
+                        <i class="fas fa-wheat text-farm-green text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Organic Wheat</h4>
+                    <p class="text-farm-green font-bold">Rs. 120/kg</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                    <div class="bg-farm-tan h-32 rounded flex items-center justify-center mb-3">
+                        <i class="fas fa-carrot text-farm-green text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Fresh Carrots</h4>
+                    <p class="text-farm-green font-bold">Rs. 80/kg</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                    <div class="bg-farm-tan h-32 rounded flex items-center justify-center mb-3">
+                        <i class="fas fa-seedling text-farm-green text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Quality Seeds</h4>
+                    <p class="text-farm-green font-bold">Rs. 200/kg</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                    <div class="bg-farm-tan h-32 rounded flex items-center justify-center mb-3">
+                        <i class="fas fa-egg text-farm-green text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Farm Fresh Eggs</h4>
+                    <p class="text-farm-green font-bold">Rs. 180/dozen</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

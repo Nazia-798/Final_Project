@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgriFarma Admin{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'farm-green': '#2d5016',
+                        'farm-light-green': '#4a7c2a',
+                        'farm-tan': '#e6d7b8',
+                        'farm-brown': '#8b4513',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="bg-farm-green text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out z-50">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2 px-4 mb-8">
+                <i class="fas fa-tractor text-2xl"></i>
+                <span class="text-xl font-bold">AgriFarma Admin</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="space-y-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_dashboard' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                
+                <a href="{{ url_for('admin_users') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_users' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-users mr-3"></i>User Management
+                </a>
+                
+                <a href="{{ url_for('admin_products') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_products' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-shopping-bag mr-3"></i>Product Management
+                </a>
+                
+                <a href="{{ url_for('admin_consultants') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_consultants' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-user-tie mr-3"></i>Consultant Approval
+                </a>
+                
+                <a href="{{ url_for('admin_reports') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_reports' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-chart-bar mr-3"></i>Reports & Analytics
+                </a>
+                
+                <a href="{{ url_for('admin_content') }}" class="block py-3 px-4 rounded transition duration-200 {% if request.endpoint == 'admin_content' %}bg-farm-light-green{% else %}hover:bg-farm-light-green{% endif %}">
+                    <i class="fas fa-file-alt mr-3"></i>Content Moderation
+                </a>
+            </nav>
+
+            <!-- Quick Stats -->
+            <div class="mt-8 p-4 bg-farm-light-green rounded-lg">
+                <h4 class="font-semibold mb-2">Quick Stats</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Total Users:</span>
+                        <span class="font-bold">{{ User.query.count() }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Pending Products:</span>
+                        <span class="font-bold">{{ Product.query.filter_by(is_approved=False).count() }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>New Today:</span>
+                        <span class="font-bold">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Info -->
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-farm-light-green">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-farm-light-green w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-sm">{{ current_user.name }}</p>
+                        <p class="text-farm-tan text-xs">Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm border-b">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button class="text-gray-500 focus:outline-none md:hidden" id="menu-toggle">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-xl font-bold text-farm-green ml-4">{% block page_title %}Admin Panel{% endblock %}</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ url_for('dashboard') }}" class="bg-farm-green text-white px-4 py-2 rounded-lg hover:bg-farm-light-green transition flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Site
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-farm-green transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="px-6 pt-4">
+                        {% for category, message in messages %}
+                            <div class="bg-{% if category == 'error' %}red{% else %}green{% endif %}-100 border border-{% if category == 'error' %}red{% else %}green{% endif %}-400 text-{% if category == 'error' %}red{% else %}green{% endif %}-700 px-4 py-3 rounded relative mb-4" role="alert">
+                                <span class="block sm:inline">{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle')?.addEventListener('click', function() {
+            const sidebar = document.querySelector('.bg-farm-green');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.bg-farm-green');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            if (window.innerWidth < 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+    </script>
+</body>
+</html>
